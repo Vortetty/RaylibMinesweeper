@@ -1,8 +1,10 @@
 #
 # Edit makefile_real to change rules and config.
+# Edit the below var to change the multiplier for the number of threads (by default it is 1, meaning it will be the number of cores you have).
 #
+coreMult = 2
 
-CORES := $(shell nproc)
+CORES := $$(( $(shell nproc) * $(coreMult) ))
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
 .PHONY: build run gdb clean

@@ -1,42 +1,69 @@
 #define RAYGUI_IMPLEMENTATION
 #define RAYGUI_SUPPORT_RICONS
-#define GUI_TEXTBOX_EXTENDED_IMPLEMENTATION
-#define SUPPORT_FILEFORMAT_BMP
+#define RAYSCENES_IMPLEMENTATION
 #define SUPPORT_FILEFORMAT_PNG
-#define SUPPORT_FILEFORMAT_TGA
-#define SUPPORT_FILEFORMAT_JPG
-#define SUPPORT_FILEFORMAT_GIF
-#define SUPPORT_FILEFORMAT_PSD
-#define SUPPORT_FILEFORMAT_PIC
-#define SUPPORT_FILEFORMAT_HDR
-#define SUPPORT_FILEFORMAT_DDS
-#define SUPPORT_FILEFORMAT_PKM
-#define SUPPORT_FILEFORMAT_KTX
-#define SUPPORT_FILEFORMAT_PVR
-#define SUPPORT_FILEFORMAT_ASTC
 #include "raylib.h"
 #include "raygui.h"
-#include "gui_textbox_extended.h"
+#include "rayscenes.hpp"
 #undef RAYGUI_IMPLEMENTATION
 
+#define FOR_VECTOR( type, vect, ... ) \
+  for( std::vector<type>::iterator i=vect.begin(); i!=vect.end(); ++i ) { \
+    __VA_ARGS__ \
+  }
+
 #include <string>
+#include <filesystem>
+#include <iostream>
+ 
+namespace fs = std::filesystem;
+
+fs::path exePath = fs::read_symlink("/proc/self/exe");
+fs::path assetPath = exePath.remove_filename() / "assets";
+
+bool tiles[10][10] = {
+    {false, false, false, false, false, false, false, false, false, false},
+    {false, false, false, false, false, false, false, false, false, false},
+    {false, false, false, false, false, false, false, false, false, false},
+    {false, false, false, false, false, false, false, false, false, false},
+    {false, false, false, false, false, false, false, false, false, false},
+    {false, false, false, false, false, false, false, false, false, false},
+    {false, false, false, false, false, false, false, false, false, false},
+    {false, false, false, false, false, false, false, false, false, false},
+    {false, false, false, false, false, false, false, false, false, false},
+    {false, false, false, false, false, false, false, false, false, false}
+};
 
 int main(int argc, char* argv[]) {
-    InitWindow(160, 160, "Raylib example");
+    InitWindow(320, 320, "Minesweeper");
+    std::cout << "EXE path: " << exePath << std::endl;
+    std::cout << "Asset path: " << assetPath << std::endl;
 
-    Font f = GetFontDefault();
-    f.baseSize = 10;
-    GuiSetFont(f);
+    Texture flag = LoadTexture((assetPath / "flag.png").c_str());
+    Vector2 cursorPos = {0, 0};
+
+    create_rsm()
+    register_rayscene(title, "titleScreen", 
+        DrawFPS(10, 10);
+    )
+    set_active_scene("titleScreen")
 
     while (!WindowShouldClose()) {
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            cursorPos = GetMousePosition();
+            if (cursorPos.x < 0 || cursorPos.y < 0 || cursorPos.x > GetScreenWidth() || cursorPos.y > GetScreenHeight()) {
+                continue;
+            }
+            int x = cursorPos.x / 32;
+            int y = cursorPos.y / 32;
+            tiles[x][y] = !tiles[x][y];
+        }
+
         BeginDrawing();
 
-        ClearBackground(GRAY);
+        ClearBackground(BLACK);
 
-        GuiDrawIcon(RICON_CUBE, {0, 0}, 10, {DARKGRAY});
-        std::string text = "Hello user!\nFPS: " + std::to_string(GetFPS());
-        Vector2 size = MeasureTextEx(guiFont, text.c_str(), 20.0, 2.0);
-        DrawText(text.c_str(), 160/2-size.x/2, 160/2-size.y/2, 20.0, RAYWHITE);
+        run_active_scenes()
 
         EndDrawing();
     }

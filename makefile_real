@@ -96,6 +96,7 @@ ifeq ($(UNAME_S),Linux)
 build: $(OBJ_FILES)
 	-rm -rf bin
 	-mkdir bin
+	cp -r assets bin/
 	clang++ -std=c++20 -o bin/$(BINARY_NAME) $(OBJ_FILES) $(INCLUDE_DIRS) $(LINK_LIBRARIES) -pthreads -O3 $(IGNORE_ISO) $(POLLY_OPTS) $(DEFINES) -Wl,-s
 
 run:
@@ -107,6 +108,7 @@ test: build
 gdb: setGdbOpts $(OBJ_FILES)
 	-rm -rf bin
 	-mkdir bin
+	cp -r assets bin/
 	clang++ -std=c++20 -o bin/$(BINARY_NAME) $(OBJ_FILES) $(INCLUDE_DIRS) $(LINK_LIBRARIES) -pthreads -O3 $(IGNORE_ISO) $(POLLY_OPTS) $(DEFINES) -Wl,-s -g
 	gdb -ex run bin/$(BINARY_NAME)
 
